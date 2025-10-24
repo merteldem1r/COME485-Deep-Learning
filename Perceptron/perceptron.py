@@ -56,7 +56,7 @@ if __name__ == "__main__":
     y = np.array([0, 0, 0, 1])
 
     # Create a Perceptron instance with 2 input dimensions, learning rate of 0.1, and 10 epochs
-    perceptron = Perceptron(input_dim=2, learning_rate=0.1, n_epochs=10)
+    perceptron = Perceptron(input_dim=2, learning_rate=0.1, n_epochs=50)
     # Train the perceptron on the AND gate data
     perceptron.fit(X, y)
 
@@ -65,3 +65,11 @@ if __name__ == "__main__":
     for xi in X:  # Loop over each input example
         # Print the input and its predicted output
         print(f"{xi} -> {perceptron.predict(xi)}")
+
+        """
+        Predictions after training:
+            [0 0] -> 0
+            [0 1] -> 0
+            [1 0] -> 0  
+            [1 1] -> 1
+        """
