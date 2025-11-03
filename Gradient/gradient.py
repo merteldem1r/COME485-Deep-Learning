@@ -9,7 +9,7 @@ def f(w, b, x):  # sigmoid with parameters w,b
     return 1.0 / (1.0 + np.exp(-(w*x + b)))
 
 
-def error(w, b):  # SSE error function
+def error(w, b):  # Sum of Squared Errors function
     err = 0.0
     for x, y in zip(X, Y):
         fx = f(w, b, x)
@@ -17,6 +17,7 @@ def error(w, b):  # SSE error function
     return err
 
 
+# Partial Derivatives (Gradients)
 def grad_b(w, b, x, y):
     fx = f(w, b, x)
     return (fx - y) * fx * (1 - fx)
@@ -27,7 +28,9 @@ def grad_w(w, b, x, y):
     return (fx - y) * fx * (1 - fx) * x
 
 
+# The Gradient Descent Update Rule
 def do_gradient_descent():
+    # n = eta = learning rate
     w, b, eta, max_epochs = -2.0, 0.0, 1.0, 1000
     for i in range(max_epochs):
         dw, db = 0, 0
@@ -37,7 +40,7 @@ def do_gradient_descent():
         w = w - eta * dw
         b = b - eta * db
 
-        time.sleep(3)  # Slow down for visualization purposes
+        time.sleep(0.25)  # Slow down for visualization purposes
         print(f"Epoch {i+1}: w = {w}, b = {b}, error = {error(w, b)}")
 
 
