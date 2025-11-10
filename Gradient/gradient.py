@@ -5,7 +5,7 @@ X = [0.5, 2.5]  # input data points
 Y = [0.2, 0.9]  # desired output data points
 
 
-def f(w, b, x):  # sigmoid with parameters w,b
+def f(w, b, x):  # sigmoid with parameters w,b (here we produce predicted output for xi)
     return 1.0 / (1.0 + np.exp(-(w*x + b)))
 
 
@@ -17,7 +17,7 @@ def error(w, b):  # Sum of Squared Errors function
     return err
 
 
-# Partial Derivatives (Gradients)
+# Partial Derivatives (Gradients) for Bias and Weight update
 def grad_b(w, b, x, y):
     fx = f(w, b, x)
     return (fx - y) * fx * (1 - fx)
