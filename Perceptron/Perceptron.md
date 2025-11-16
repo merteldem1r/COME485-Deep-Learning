@@ -189,4 +189,125 @@ With more epochs, the weights would stabilize and all training examples would be
 - **Hard decisions**: Produces hard class decisions (no probabilities); order of samples can affect the found solution.
 - **Linear limitation**: Cannot learn non-linearly separable problems (e.g., XOR). The step activation is non-differentiable; modern neural networks use differentiable activations and gradient-based training.
 
-See the example implementation in `Perceptron/perceptron.py`.
+See the example implementation in [Perceptron/perceptron.py](/Perceptron/perceptron.py)
+
+---
+
+## Why a Single Perceptron Cannot Solve XOR
+
+### The XOR Problem
+
+The XOR (exclusive OR) gate is a fundamental logical operation that outputs 1 only when the inputs are different:
+
+| $x_1$ | $x_2$ | $y$ (XOR output) |
+| ----- | ----- | ---------------- |
+| 0     | 0     | 0                |
+| 0     | 1     | 1                |
+| 1     | 0     | 1                |
+| 1     | 1     | 0                |
+
+**Key observation**: XOR returns 1 when inputs differ (0,1) or (1,0), but returns 0 when inputs are the same (0,0) or (1,1).
+
+### What Does a Single Perceptron Do?
+
+A single perceptron creates a **linear decision boundary**. Mathematically, this is the equation:
+
+$$w_1 x_1 + w_2 x_2 + b = 0$$
+
+This represents a **straight line** in 2D space (or a hyperplane in higher dimensions). The perceptron divides the input space into two regions:
+
+- **One side of the line**: All points here get classified as 0
+- **Other side of the line**: All points here get classified as 1
+
+Think of it like drawing a single straight line on a piece of paper to separate two groups of dots.
+
+### Why XOR is Impossible for a Single Line
+
+Let's plot the XOR truth table on a 2D plane:
+
+```
+    x2
+    1   ●(1,1)→0    ○(0,1)→1
+
+    0   ○(1,0)→1    ●(0,0)→0
+        0           1         x1
+```
+
+Where:
+
+- **○ (circles)** = Points that should output 1
+- **● (filled dots)** = Points that should output 0
+
+**The problem**: The two circles (1s) are at **opposite corners**, and the two filled dots (0s) are at the **other opposite corners**.
+
+**Try to draw a single straight line that separates circles from filled dots.** You cannot do it! No matter how you position or angle a straight line:
+
+- Any line that puts (0,1) on the "1" side will also incorrectly include either (0,0) or (1,1)
+- Any line that puts (1,0) on the "1" side will also incorrectly include either (0,0) or (1,1)
+
+This is called **non-linear separability** — the data cannot be separated by a single straight line.
+
+### Mathematical Proof
+
+Let's try to find weights that would work. We need:
+
+1. For $(0,0) \rightarrow 0$: $w_1(0) + w_2(0) + b < 0 \implies b < 0$
+2. For $(0,1) \rightarrow 1$: $w_1(0) + w_2(1) + b \geq 0 \implies w_2 + b \geq 0$
+3. For $(1,0) \rightarrow 1$: $w_1(1) + w_2(0) + b \geq 0 \implies w_1 + b \geq 0$
+4. For $(1,1) \rightarrow 0$: $w_1(1) + w_2(1) + b < 0 \implies w_1 + w_2 + b < 0$
+
+From (2): $w_2 \geq -b$  
+From (3): $w_1 \geq -b$  
+Adding these: $w_1 + w_2 \geq -2b$
+
+But from (1): $b < 0$, so $-2b > 0$, which means $w_1 + w_2 > 0$
+
+From (4): $w_1 + w_2 + b < 0$
+
+Combining: $w_1 + w_2 > 0$ and $w_1 + w_2 < -b$ and $-b > 0$
+
+This creates: $w_1 + w_2 > 0$ and $w_1 + w_2 < -b$ with $-b > 0$
+
+From (2) and (3): $w_1 + w_2 \geq -2b$ (positive value)  
+From (4): $w_1 + w_2 < -b$ (must be negative since $b < 0$)
+
+This is a **contradiction**: We need $w_1 + w_2$ to be both positive (from conditions 2 and 3) and negative (from condition 4). **Impossible!**
+
+### What This Means
+
+A single perceptron has **fundamental limitations**:
+
+1. **Geometric limitation**: Can only create linear (straight-line) decision boundaries
+2. **Cannot model complex patterns**: Any pattern requiring curved, circular, or multiple boundaries is impossible
+3. **XOR is the simplest non-linear problem**: If a perceptron can't solve XOR, it can't solve any non-linear problem
+
+### The Solution: Multiple Perceptrons (Neural Networks)
+
+To solve XOR, you need **at least 2 perceptrons in a hidden layer** plus an output perceptron:
+
+**Architecture:**
+
+```
+Input Layer (2)  →  Hidden Layer (2)  →  Output Layer (1)
+   x1, x2               h1, h2                  y
+```
+
+**How it works:**
+
+1. **First hidden perceptron (h1)**: Learns to recognize one pattern (e.g., when $x_1 + x_2 \geq 1$)
+2. **Second hidden perceptron (h2)**: Learns to recognize another pattern (e.g., when $x_1 + x_2 \leq 1$)
+3. **Output perceptron**: Combines h1 and h2 to produce the final XOR output
+
+By combining multiple linear boundaries from different perceptrons, we can create **non-linear decision regions** that solve XOR and much more complex problems.
+
+**This is why deep neural networks work**: They stack multiple layers of perceptrons (neurons) to create increasingly complex, non-linear decision boundaries that can solve problems far beyond what a single perceptron can handle.
+
+### Key Takeaway
+
+The inability of a single perceptron to solve XOR was a major discovery in the 1960s that temporarily halted neural network research. It revealed that:
+
+- **Single perceptrons are limited** to linearly separable problems
+- **Multiple layers are essential** for solving real-world, non-linear problems
+- **Modern deep learning exists** precisely because we learned to train networks with many layers of perceptrons working together
+
+This limitation is not a flaw — it's a fundamental property of linear classifiers. Understanding it helps us appreciate why modern neural networks need depth and complexity.
